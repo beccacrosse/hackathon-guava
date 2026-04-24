@@ -133,7 +133,8 @@ def on_call_start(call: guava.Call) -> None:
             "has already been solved or requires a human callback. Keep your tone empathetic and conversational, "
             "and vary acknowledgment language naturally rather than repeating the same phrase. Rotate responses like "
             "'Thanks for sharing that', 'I hear you', 'That sounds frustrating', 'I appreciate you explaining that', "
-            "'Got it', and 'Thanks for your patience'."
+            "'Got it', and 'Thanks for your patience'. If the caller's request is unclear or ambiguous, explicitly "
+            "ask whether they can provide any additional information before continuing."
         ),
         checklist=[
             guava.Say(
