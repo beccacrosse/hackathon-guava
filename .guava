@@ -3,6 +3,6 @@
   "name": "my-agent",
   "campaign_type": "inbound",
   "base_image": "python-sandbox:3.14",
-  "phone_number": "+14842950149",
+  "phone_number": "+14844813864",
   "tier": "guava-seed"
 }
