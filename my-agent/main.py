@@ -14,6 +14,7 @@ agent = guava.Agent(
     agent_name="Emma",
     purpose="Answer questions regarding property insurance policy until there are no more questions"
 )
+agent.listen_phone(os.environ["+14842951565"])
 
 document_qa = DocumentQA(documents=PROPERTY_INSURANCE_POLICY)
 
@@ -22,6 +23,7 @@ def on_call_start(call: guava.Call):
     # Set your first task here using call.set_task(...)
     call.set_task()
     pass
+
 
 
 if __name__ == "__main__":
