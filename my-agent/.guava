@@ -3,9 +3,9 @@
   "name": "my-agent",
   "campaign_type": "inbound",
   "base_image": "python-sandbox:3.14",
-  "task_id": "69eac6af506ccaa0e174f55e",
-  "build_id": "69eac67d506ccaa0e174f51b",
-  "bundle_hash": "9c59d604945cb7d84df4672f79309618177585f2b8df1362bc85ea7e700015fb",
-  "cloud_build_id": "bf5a2c65-2328-4504-b727-24226d464cb2",
+  "task_id": "69eac8e861f6311e6f4b5af9",
+  "build_id": "69eac8c261f6311e6f4b5ae5",
+  "bundle_hash": "a4c43e7c68d5c23eeda71cfd55cb0b81261fda2ea459e0c0fa248e4c4f1da7c9",
+  "cloud_build_id": "ffe0e154-7e42-4208-b417-a1f65eefc8bd",
   "tier": "guava-seed"
 }

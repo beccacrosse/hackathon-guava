@@ -17,6 +17,12 @@ agent.listen_phone("+14844813864")
 document_qa = DocumentQA(documents=PROPERTY_INSURANCE_POLICY)
 
 logger = logging.getLogger("guava.examples.property_insurance")
+
+@agent.on_call_start()
+def on_call_start(call: guava.Call):
+    # Set your first task here using call.set_task(...)
+    call.set_task("say hello to the caller, ask them how you can help them today")
+    pass
 # When the Agent is asked a question that it cannot answer, it will invoke the on_question callback.
 @agent.on_question
 def on_question(call: guava.Call, question: str) -> str:
@@ -45,12 +51,6 @@ if __name__ == "__main__":
         agent.listen_webrtc()
     else:
         agent.local_call()
-
-@agent.on_call_start()
-def on_call_start(call: guava.Call):
-    # Set your first task here using call.set_task(...)
-    call.set_task("say ")
-    pass
 
 
 

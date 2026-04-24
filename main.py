@@ -225,7 +225,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--agent-number",
-        default=os.environ.get("GUAVA_AGENT_NUMBER"),
+        default="+14844813864",
         help="Phone number the agent should listen on for inbound calls",
     )
     args = parser.parse_args()
