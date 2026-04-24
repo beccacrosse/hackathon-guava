@@ -1,0 +1,7 @@
+{
+  "project_id": "3dc4269b-cc97-4567-bfa7-205096d963c3",
+  "name": "my-agent",
+  "campaign_type": "inbound",
+  "base_image": "python-sandbox:3.14",
+  "tier": "guava-seed"
+}
