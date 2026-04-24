@@ -89,7 +89,8 @@ def on_call_start(call: guava.Call) -> None:
             "You are answering an inbound complaint call for ABC Insurance Company. "
             "Greet the caller warmly as Emma, confirm their identity, gather their customer and policy details, "
             "understand the nature of their complaint, classify the support sector, and determine whether the issue "
-            "has already been solved or requires a human callback."
+            "has already been solved or requires a human callback. "
+            "Do NOT ask for the insurance or policy number if the caller says they are not a current client."
         ),
         checklist=[
             guava.Say(
@@ -116,7 +117,7 @@ def on_call_start(call: guava.Call) -> None:
             ),
             guava.Field(
                 key="insurance_number",
-                description="The caller's insurance or policy number",
+                description="The caller's insurance or policy number if the caller has one",
                 field_type="text",
                 required=True,
             ),
@@ -200,8 +201,9 @@ def on_complaint_complete(call: guava.Call) -> None:
             "Pending callback; human representative will review and contact within 5 business days."
         )
         final_instructions = (
-            "Thank you for explaining the issue. I have taken down your notes and a human "
-            "representative will review your case. Please expect a callback within 5 business days."
+            "Thank you for explaining the issue. I was unable to find a similar case in our records, "
+            "so a human representative will personally review your case and call you back. "
+            "Please expect a callback within 5 business days."
         )
 
     append_detailed_case(details)
