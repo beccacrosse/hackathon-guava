@@ -1,0 +1,8 @@
+{
+  "project_id": "ce2fdb98-ed58-4100-8a4f-c8d02d7c7ec0",
+  "name": "my-agent",
+  "campaign_type": "inbound",
+  "base_image": "python-sandbox:3.14",
+  "phone_number": "+14842950149",
+  "tier": "guava-seed"
+}
