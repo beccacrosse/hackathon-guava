@@ -11,6 +11,20 @@ from guava import logging_utils
 
 COMPLAINT_DATABASE_CSV = Path("insurance_complaints.csv")
 DETAILED_CASES_CSV = Path("cases.csv")
+DETAILED_CASE_FIELDS = [
+    "timestamp",
+    "full_name",
+    "date_of_birth",
+    "phone_number",
+    "current_client",
+    "insurance_number",
+    "support_sector",
+    "case_number",
+    "inquiry_summary",
+    "problem_characteristics",
+    "multiple_attempts",
+    "inquiry_solved",
+]
 
 agent = guava.Agent(
     name="Emma",
@@ -61,10 +75,37 @@ def append_detailed_case(results: dict[str, str], path: Path = DETAILED_CASES_CS
     path.parent.mkdir(parents=True, exist_ok=True)
     write_header = not path.exists()
     with path.open("a", encoding="utf-8", newline="") as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=list(results.keys()))
+        writer = csv.DictWriter(csvfile, fieldnames=DETAILED_CASE_FIELDS)
         if write_header:
             writer.writeheader()
         writer.writerow(results)
+
+
+def load_detailed_cases(path: Path = DETAILED_CASES_CSV) -> list[dict[str, str]]:
+    if not path.exists():
+        return []
+    with path.open("r", encoding="utf-8", newline="") as csvfile:
+        return list(csv.DictReader(csvfile))
+
+
+def normalize_phone_number(phone_number: str) -> str:
+    return re.sub(r"\D", "", phone_number or "")
+
+
+def find_returning_caller_case(
+    phone_number: str, date_of_birth: str, cases: list[dict[str, str]]
+) -> dict[str, str] | None:
+    normalized_phone = normalize_phone_number(phone_number)
+    normalized_dob = (date_of_birth or "").strip().lower()
+    if not normalized_phone or not normalized_dob:
+        return None
+
+    for case in reversed(cases):
+        case_phone = normalize_phone_number(case.get("phone_number", ""))
+        case_dob = (case.get("date_of_birth", "") or "").strip().lower()
+        if case_phone == normalized_phone and case_dob == normalized_dob:
+            return case
+    return None
 
 
 def find_similar_case(query: str, cases: list[dict[str, str]], threshold: float = 0.3) -> dict[str, str] | None:
@@ -89,8 +130,16 @@ def on_call_start(call: guava.Call) -> None:
             "You are answering an inbound complaint call for ABC Insurance Company. "
             "Greet the caller warmly as Emma, confirm their identity, gather their customer and policy details, "
             "understand the nature of their complaint, classify the support sector, and determine whether the issue "
+<<<<<<< HEAD
             "has already been solved or requires a human callback. "
             "Do NOT ask for the insurance or policy number if the caller says they are not a current client."
+=======
+            "has already been solved or requires a human callback. Keep your tone empathetic and conversational, "
+            "and vary acknowledgment language naturally rather than repeating the same phrase. Rotate responses like "
+            "'Thanks for sharing that', 'I hear you', 'That sounds frustrating', 'I appreciate you explaining that', "
+            "'Got it', and 'Thanks for your patience'. If the caller's request is unclear or ambiguous, explicitly "
+            "ask whether they can provide any additional information before continuing."
+>>>>>>> ecf999870afff797edf11617e62e2241a1b72f28
         ),
         checklist=[
             guava.Say(
@@ -106,6 +155,12 @@ def on_call_start(call: guava.Call) -> None:
             guava.Field(
                 key="date_of_birth",
                 description="The caller's date of birth",
+                field_type="text",
+                required=True,
+            ),
+            guava.Field(
+                key="phone_number",
+                description="The caller's callback phone number",
                 field_type="text",
                 required=True,
             ),
@@ -173,6 +228,7 @@ def on_complaint_complete(call: guava.Call) -> None:
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "full_name": call.get_field("full_name"),
         "date_of_birth": call.get_field("date_of_birth"),
+        "phone_number": call.get_field("phone_number"),
         "current_client": call.get_field("current_client"),
         "insurance_number": call.get_field("insurance_number"),
         "support_sector": call.get_field("support_sector"),
@@ -186,25 +242,59 @@ def on_complaint_complete(call: guava.Call) -> None:
     search_text = (
         f"{details['inquiry_summary']} {details['problem_characteristics']} {details['support_sector']}"
     )
+    detailed_cases = load_detailed_cases()
+    returning_case = find_returning_caller_case(
+        details["phone_number"], details["date_of_birth"], detailed_cases
+    )
     past_cases = load_complaint_database()
     match = find_similar_case(search_text, past_cases)
 
+    if returning_case is not None:
+        logging.info(
+            "Returning caller detected for phone %s and DOB %s",
+            details["phone_number"],
+            details["date_of_birth"],
+        )
+        if not details["case_number"] and returning_case.get("case_number"):
+            details["case_number"] = returning_case["case_number"]
+
     if match is not None:
         resolution_steps = match["Representative Response & Resolution Steps"]
-        final_instructions = (
-            "I found a similar case in our records and can resolve this now using the established process. "
-            "Thank you for your patience; I have recorded the details and we are handling this with the same "
-            "resolution approach that worked before. If anything changes, we will follow up with you."
-        )
+        if returning_case is not None:
+            final_instructions = (
+                "I verified your information and found your prior case details on file. "
+                "I also found a similar resolved complaint, so we are handling this now using the established "
+                "resolution process. If anything changes, we will follow up with you."
+            )
+        else:
+            final_instructions = (
+                "I found a similar case in our records and can resolve this now using the established process. "
+                "Thank you for your patience; I have recorded the details and we are handling this with the same "
+                "resolution approach that worked before. If anything changes, we will follow up with you."
+            )
     else:
         resolution_steps = (
             "Pending callback; human representative will review and contact within 5 business days."
         )
+<<<<<<< HEAD
         final_instructions = (
             "Thank you for explaining the issue. I was unable to find a similar case in our records, "
             "so a human representative will personally review your case and call you back. "
             "Please expect a callback within 5 business days."
         )
+=======
+        if returning_case is not None:
+            final_instructions = (
+                "I verified your information and confirmed your previous details are already on file. "
+                "I have added today's update, and a human representative will review your case. "
+                "Please expect a callback within 5 business days."
+            )
+        else:
+            final_instructions = (
+                "Thank you for explaining the issue. I have taken down your notes and a human "
+                "representative will review your case. Please expect a callback within 5 business days."
+            )
+>>>>>>> ecf999870afff797edf11617e62e2241a1b72f28
 
     append_detailed_case(details)
     append_complaint_case(
@@ -227,7 +317,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--agent-number",
-        default=os.environ.get("GUAVA_AGENT_NUMBER"),
+        default="+14844813864",
         help="Phone number the agent should listen on for inbound calls",
     )
     args = parser.parse_args()

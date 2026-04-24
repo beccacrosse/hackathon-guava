@@ -3,6 +3,10 @@
   "name": "my-agent",
   "campaign_type": "inbound",
   "base_image": "python-sandbox:3.14",
+  "task_id": "69eacb1761f6311e6f4b5bbb",
+  "build_id": "69eacae561f6311e6f4b5bb9",
   "phone_number": "+14844813864",
+  "bundle_hash": "22c12cb80a8e6ee3eecf53054276bbd54a0c92cdb778c4df3c28f1a1e4972561",
+  "cloud_build_id": "e594c0d6-1fc5-4abe-8b1c-4e4d160ad3fb",
   "tier": "guava-seed"
 }
