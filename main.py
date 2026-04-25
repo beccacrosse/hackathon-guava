@@ -130,16 +130,17 @@ def on_call_start(call: guava.Call) -> None:
             "You are answering an inbound complaint call for ABC Insurance Company. "
             "Greet the caller warmly as Emma, confirm their identity, gather their customer and policy details, "
             "understand the nature of their complaint, classify the support sector, and determine whether the issue "
-<<<<<<< HEAD
-            "has already been solved or requires a human callback. "
-            "Do NOT ask for the insurance or policy number if the caller says they are not a current client."
-=======
             "has already been solved or requires a human callback. Keep your tone empathetic and conversational, "
             "and vary acknowledgment language naturally rather than repeating the same phrase. Rotate responses like "
             "'Thanks for sharing that', 'I hear you', 'That sounds frustrating', 'I appreciate you explaining that', "
-            "'Got it', and 'Thanks for your patience'. If the caller's request is unclear or ambiguous, explicitly "
-            "ask whether they can provide any additional information before continuing."
->>>>>>> ecf999870afff797edf11617e62e2241a1b72f28
+            "'Got it', and 'Thanks for your patience'. Only use empathy acknowledgments when the caller has shared a "
+            "concern or issue; for simple greetings like 'hello', respond with a natural greeting instead of saying "
+            "'I understand'. If the caller's request is unclear or ambiguous, explicitly ask whether they can provide "
+            "any additional information before continuing. Do NOT ask for the insurance or policy number if the "
+            "caller says they are not a current client. Do not say you are transferring to a specialist. Before "
+            "ending the call, always ask whether the caller needs any additional help, then close with a pleasant "
+            "goodbye. Do not ask the same question multiple times: once a field is answered, briefly acknowledge it "
+            "and move to the next required item."
         ),
         checklist=[
             guava.Say(
@@ -260,41 +261,37 @@ def on_complaint_complete(call: guava.Call) -> None:
 
     if match is not None:
         resolution_steps = match["Representative Response & Resolution Steps"]
-        if returning_case is not None:
+        if resolution_steps is not None:
             final_instructions = (
                 "I verified your information and found your prior case details on file. "
-                "I also found a similar resolved complaint, so we are handling this now using the established "
-                "resolution process. If anything changes, we will follow up with you."
+                "I also found a similar resolved complaint, so your issue is already underway using the established "
+                "resolution process. Your case has been escalated, and a human representative will call you back "
+                "with an update. If anything changes, we will follow up with you. Before we end, is there anything "
+                "else I can help you with today? Thank you for calling ABC Insurance, and have a great day."
             )
         else:
             final_instructions = (
-                "I found a similar case in our records and can resolve this now using the established process. "
-                "Thank you for your patience; I have recorded the details and we are handling this with the same "
-                "resolution approach that worked before. If anything changes, we will follow up with you."
+                "I found a similar case in our records. I have restated and recorded your issue, and it is now "
+                "underway using the same resolution approach that worked before. Your case has been escalated, and "
+                "a human representative will call you back with an update. Thank you for your patience. Before we "
+                "end, is there anything else I can help you with today? Thank you for calling ABC Insurance, and "
+                "have a great day."
             )
     else:
-        resolution_steps = (
-            "Pending callback; human representative will review and contact within 5 business days."
-        )
-<<<<<<< HEAD
-        final_instructions = (
-            "Thank you for explaining the issue. I was unable to find a similar case in our records, "
-            "so a human representative will personally review your case and call you back. "
-            "Please expect a callback within 5 business days."
-        )
-=======
         if returning_case is not None:
             final_instructions = (
                 "I verified your information and confirmed your previous details are already on file. "
                 "I have added today's update, and a human representative will review your case. "
-                "Please expect a callback within 5 business days."
+                "Please expect a callback within 5 business days. Before we end, is there anything else I can help "
+                "you with today? Thank you for calling ABC Insurance, and have a great day."
             )
         else:
             final_instructions = (
-                "Thank you for explaining the issue. I have taken down your notes and a human "
-                "representative will review your case. Please expect a callback within 5 business days."
+                "Thank you for explaining the issue. I was unable to find a similar case in our records, "
+                "so a human representative will personally review your case and call you back. "
+                "Please expect a callback within 5 business days. Before we end, is there anything else I can help "
+                "you with today? Thank you for calling ABC Insurance, and have a great day."
             )
->>>>>>> ecf999870afff797edf11617e62e2241a1b72f28
 
     append_detailed_case(details)
     append_complaint_case(
